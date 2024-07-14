@@ -20,6 +20,16 @@ prev_x, prev_y = None, None
 def moving_average(buffer):
     return sum(buffer) / len(buffer) if buffer else 0
 
+def get_face_box(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = detector(gray)
+    all_face = [
+        (face.left(), face.top(), face.width(), face.height()) for face in faces
+    ]
+
+    return all_face
+
+
 def get_face_data(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)

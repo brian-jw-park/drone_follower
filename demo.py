@@ -2,6 +2,8 @@ import djitellopy as tello
 from ultralytics import YOLO
 import time
 import cv2
+from face import get_face_box
+
 
 model = YOLO("yolo-Weights/yolov8n.pt")
 
@@ -28,7 +30,9 @@ while True:
         continue
 
     # bounding box
-    x1, y1, x2, y2 = box.xyxy[0]
+    x1, y1, w, h = get_face_box(img)[0]
+    x2, y2 = x1 + w, y1 + h
+    # x1, y1, x2, y2 = box.xyxy[0]
     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2) # convert to int values
 
     # put box in cam
