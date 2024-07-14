@@ -31,11 +31,8 @@ def get_face_box(img):
 
 
 def get_face_data(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
-
-    for face in faces:
-        x, y, w, h = face.left(), face.top(), face.width(), face.height()
+    for face in get_face_box(img):
+        x, y, w, h = face
         
         # Get the landmarks
         landmarks = predictor(gray, face)
@@ -73,8 +70,6 @@ def get_face_data(img):
         delta_x = right_eye_center[0] - left_eye_center[0]
         delta_y = right_eye_center[1] - left_eye_center[1]
         angle = np.degrees(np.arctan2(delta_y, delta_x))
-
-        # Update angle buffer
         angle_buffer.append(angle)
 
         # Calculate smoothed angle
@@ -82,11 +77,34 @@ def get_face_data(img):
 
         cv2.putText(img, f"Angle: {avg_angle:.2f}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-        # Draw rectangle around the face
         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-        # Draw landmarks
         for point in landmarks_points:
             cv2.circle(img, point, 2, (0, 0, 255), -1)
 
     return img
+
+
+if __name__ == '__main__':
+    cap = cv2.VideoCapture(0)
+    cap.set(3, 640)
+    cap.set(4, 480)
+
+    while True:
+        success, img = cap.read()
+        if not success:
+            print("Failed to grab frame")
+            break
+
+        get_face_data(img)
+
+        cv2.imshow('Webcam', img)
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+
+
+
